@@ -1,53 +1,66 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Sparkles, Upload, PenTool } from 'lucide-react';
+import { Plus, PenSquare, Sparkles, Upload } from 'lucide-react';
 
-export default function FloatingActions({ onCreatePost }) {
+export default function FloatingActions() {
   const [open, setOpen] = useState(false);
 
   const actions = [
-    { label: 'Create Post', icon: PenTool, onClick: () => onCreatePost?.() },
-    { label: 'Add Skill', icon: Sparkles, onClick: () => alert('Mock: Add Skill') },
-    { label: 'Sync Activity', icon: Upload, onClick: () => alert('Mock: Sync Activity') },
+    { label: 'Create Post', icon: PenSquare, color: 'bg-indigo-500/90 hover:bg-indigo-500' },
+    { label: 'Add Skill', icon: Sparkles, color: 'bg-emerald-500/90 hover:bg-emerald-500' },
+    { label: 'Upload Project', icon: Upload, color: 'bg-pink-500/90 hover:bg-pink-500' },
   ];
 
   return (
-    <div className="fixed bottom-6 right-6 z-40">
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
-            className="mb-3 space-y-2"
-          >
-            {actions.map((a) => {
-              const Icon = a.icon;
-              return (
-                <motion.button
-                  key={a.label}
-                  whileHover={{ x: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { a.onClick(); setOpen(false); }}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/90 border border-white/10 text-slate-200 shadow-lg"
+    <div className="fixed bottom-6 right-6 z-50">
+      <div className="relative">
+        <AnimatePresence>
+          {open && (
+            <motion.ul
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="mb-3 space-y-2"
+            >
+              {actions.map(({ label, icon: Icon, color }, i) => (
+                <motion.li
+                  key={label}
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }}
                 >
-                  <Icon className="h-4 w-4 text-cyan-300" />
-                  <span className="text-sm">{a.label}</span>
-                </motion.button>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  <button
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl text-white text-sm shadow-lg ${color}`}
+                    onClick={() => {
+                      setOpen(false);
+                      // Mock handler
+                      alert(label);
+                    }}
+                  >
+                    <Icon className="w-4 h-4" /> {label}
+                  </button>
+                </motion.li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
 
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={() => setOpen((v) => !v)}
-        className="h-14 w-14 grid place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-500 shadow-xl shadow-cyan-500/30 border border-white/10"
-      >
-        <Plus className="h-6 w-6 text-white" />
-      </motion.button>
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className={`h-12 w-12 rounded-2xl flex items-center justify-center text-white shadow-xl transition active:scale-95 ${
+            open ? 'bg-white/15 border border-white/20' : 'bg-indigo-600 hover:bg-indigo-500'
+          }`}
+          aria-label="Toggle quick actions"
+        >
+          <motion.span
+            initial={false}
+            animate={{ rotate: open ? 45 : 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+          >
+            <Plus className="w-6 h-6" />
+          </motion.span>
+        </button>
+      </div>
     </div>
   );
 }
